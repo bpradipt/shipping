@@ -24,7 +24,11 @@ else
 fi
 CODE_DIR=$(cd $SCRIPT_DIR/..; pwd)
 echo $CODE_DIR
-$DOCKER_CMD run --rm -v $HOME/.m2:/root/.m2 -v $CODE_DIR:/usr/src/mymaven -w /usr/src/mymaven maven:3.2-jdk-8 mvn -DskipTests package
+if [[ "$(uname -m)" == "x86_64" ]]; then
+    $DOCKER_CMD run --rm -v $HOME/.m2:/root/.m2 -v $CODE_DIR:/usr/src/mymaven -w /usr/src/mymaven maven:3.2-jdk-8 mvn -DskipTests package
+elif [[ "$(uname -m)" == "ppc64le" ]]; then
+    $DOCKER_CMD run --rm -v $HOME/.m2:/root/.m2 -v $CODE_DIR:/usr/src/mymaven -w /usr/src/mymaven ppc64le/maven:jdk-8 mvn -DskipTests package
+fi
 
 cp $CODE_DIR/target/*.jar $CODE_DIR/docker/$(basename $CODE_DIR)
 
